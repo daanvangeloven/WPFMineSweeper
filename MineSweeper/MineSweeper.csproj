@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <None Remove="menu_background.jpg" />
+    <None Remove="Resources\Fonts\alarm clock.ttf" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Fonts\alarm clock.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\menu_background.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
