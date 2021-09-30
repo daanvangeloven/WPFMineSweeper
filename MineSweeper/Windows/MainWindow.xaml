@@ -31,7 +31,7 @@
         <Button Grid.Column="1" Background="#2D2D2D" Foreground="White" FontSize="20" Grid.Row="3" x:Name="BtnIntermediate" Click="BtnIntermediate_Click">Intermediate (16x16)</Button>
         <Button Grid.Column="1" Background="#2D2D2D" Foreground="White" FontSize="20" Grid.Row="5" x:Name="BtnExpert" Click="BtnExpert_Click">Expert (16x30)</Button>
         <Button Grid.Column="1" Background="#2D2D2D" Foreground="White" FontSize="20" Grid.Row="7" x:Name="BtnCustom" Click="BtnCustom_Click">Custom Size</Button>
-
+        
 
     </Grid>
 

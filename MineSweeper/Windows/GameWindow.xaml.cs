@@ -26,23 +26,41 @@ namespace MineSweeper
         public GameWindow(int l, int h, int b)
         {
             InitializeComponent();
+            
             r = new Random();
             height = h;
             length = l;
             bombs = b;
+
             GenerateTiles();
         }
 
         private void GenerateTiles()
         {
+            StackPanel mineField = new StackPanel
+            {
+                Orientation = Orientation.Vertical
+            };
             for (int row = 0; row < height; row++)
             {
+                StackPanel RowStack = new StackPanel();
+                RowStack.Orientation = Orientation.Horizontal;
                 // generate row here
-                for (int col = 0; col < height; col++)
+                for (int col = 0; col < length; col++)
                 {
                     // Generate Column here
+                    Button GridBtn = new Button
+                    {
+                        Width = 20,
+                        Height = 20
+                    };
+                    RowStack.Children.Add(GridBtn);
                 }
+
+                mineField.Children.Add(RowStack);
             }
+
+            MinefieldGrid.Children.Add(mineField);
         }
     }
 }

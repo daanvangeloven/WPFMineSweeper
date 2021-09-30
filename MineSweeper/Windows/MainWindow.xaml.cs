@@ -25,25 +25,27 @@ namespace MineSweeper
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StartGame(int lenght, int height, int bombs)
         {
-            GameWindow gw = new GameWindow(9, 9, 10);
+            GameWindow gw = new GameWindow(lenght, height, bombs);
             gw.Show();
             this.Close();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            StartGame(9, 9, 10);
+
         }
 
         private void BtnIntermediate_Click(object sender, RoutedEventArgs e)
         {
-            GameWindow gw = new GameWindow(16, 16, 40);
-            gw.Show();
-            this.Close();
+            StartGame(16, 16, 40);
         }
 
         private void BtnExpert_Click(object sender, RoutedEventArgs e)
         {
-            GameWindow gw = new GameWindow(30, 16, 99);
-            gw.Show();
-            this.Close();
+            StartGame(30, 16, 99);
         }
 
         private void BtnCustom_Click(object sender, RoutedEventArgs e)

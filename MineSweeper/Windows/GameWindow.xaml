@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MineSweeper"
         mc:Ignorable="d"
-        Title="GameWindow" Height="500" Width="800">
+        Title="GameWindow" x:Name="WndwGame" Height="500" Width="800" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid.Background>
             <SolidColorBrush Color="#121212"></SolidColorBrush>
@@ -14,6 +14,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
-        <TextBlock FontFamily="AlarmFont" FontSize="25" Text="69" Foreground="Red"></TextBlock>
+        <TextBlock FontFamily="Resources/Fonts#Alarm font" FontSize="25" Text="69" Foreground="Red"></TextBlock>
+        <Grid Grid.Row="1" x:Name="MinefieldGrid"></Grid>
     </Grid>
 </Window>
