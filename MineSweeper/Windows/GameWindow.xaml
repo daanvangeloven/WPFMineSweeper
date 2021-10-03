@@ -1,20 +1,27 @@
-﻿<Window x:Class="MineSweeper.GameWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MineSweeper"
+        xmlns:Properties="clr-namespace:MineSweeper.Properties" x:Class="MineSweeper.GameWindow"
         mc:Ignorable="d"
-        Title="GameWindow" x:Name="WndwGame" Height="500" Width="800" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
-    <Grid>
-        <Grid.Background>
-            <SolidColorBrush Color="#121212"></SolidColorBrush>
-        </Grid.Background>
+        Title="Minesweeper" x:Name="WndwGame" Height="500" Width="800" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+    <Grid Background="#121212">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
-        <TextBlock FontFamily="Resources/Fonts#Alarm font" FontSize="25" Text="69" Foreground="Red"></TextBlock>
-        <Grid Grid.Row="1" x:Name="MinefieldGrid"></Grid>
+        <DockPanel  VerticalAlignment="Center" Margin="5,0,5,0">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                <Image Width="18" VerticalAlignment="Center" Margin="0,0,5,0" Source="../Resources/mine.png"/>
+                <TextBlock VerticalAlignment="Center"  x:Name="txtBombs" FontFamily="alarm clock"  FontSize="25" Text="{Binding Bombs}" Foreground="White">
+                </TextBlock>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right">
+                <TextBlock x:Name="txtTimer" FontFamily="alarm clock" Text="{Binding Time}" FontSize="25" Foreground="White"/>
+            </StackPanel>
+        </DockPanel>
+        <Grid Grid.Row="1" x:Name="MinefieldGrid"/>
     </Grid>
 </Window>

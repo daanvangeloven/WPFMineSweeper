@@ -19,9 +19,36 @@ namespace MineSweeper
     /// </summary>
     public partial class CustomGameWindow : Window
     {
+        private int length;
+        private int height;
+        private int bombs;
         public CustomGameWindow()
         {
             InitializeComponent();
+        }
+
+        private void BtnStart_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                length = int.Parse(txtWidth.Text);
+                height = int.Parse(txtHeight.Text);
+                bombs = int.Parse(txtBombs.Text);
+
+                if (length < 3 || height < 3 || bombs < 1 || bombs >= length * height || height > 50 || length > 50)
+                {
+                    throw new Exception();
+                }
+
+                GameWindow gw = new GameWindow(length, height, bombs);
+                gw.Show();
+                this.Close();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Make sure all fields are numbers between 3 and 50", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
         }
     }
 }
