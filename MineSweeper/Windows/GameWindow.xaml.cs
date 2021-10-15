@@ -21,12 +21,13 @@ namespace MineSweeper
         private readonly int _height;
         private readonly int _length;
         private int _bombs;
+        private int _start_bombs;
         private DispatcherTimer t;
-        private int _time = 0;
+        private int _time;
         private Tile[,] _tileGrid;
-        ImageSource mineSource;
-        ImageSource flagSource;
-        private int debugcounter = 0;
+        readonly ImageSource mineSource;
+        readonly ImageSource flagSource;
+        private int _tileCounter;
 
         public GameWindow(int l, int h, int b)
         {
@@ -36,14 +37,17 @@ namespace MineSweeper
             _height = h;
             _length = l;
             _bombs = b;
+            _start_bombs = b;
 
             // Initialize new dispatchertimer with 1 second interval
             t = new DispatcherTimer{Interval = TimeSpan.FromMilliseconds(1000)};
             t.Tick += TOnTick;
             t.Start();
             DataContext = this;
+            _tileCounter = -2; //this has to be -2 because both the lenght and height parameter start at 1
             GenerateTiles();
-
+            
+            // Load needed images into memory
             flagSource = new BitmapImage(new Uri(@"Resources/flag.png", UriKind.Relative));
             mineSource = new BitmapImage(new Uri(@"Resources/mine.png", UriKind.Relative));
         }
@@ -54,6 +58,9 @@ namespace MineSweeper
             Time++; 
         }
 
+        /// <summary>
+        /// Generate the starting grid into a multidimensional array
+        /// </summary>
         private void GenerateTiles()
         {
              // Generate empty grid of tile objects
@@ -87,6 +94,9 @@ namespace MineSweeper
            GenerateGrid();
         }
 
+        /// <summary>
+        /// Generate the starting playing field UI elements
+        /// </summary>
         private void GenerateGrid()
         {
             StackPanel mineField = new StackPanel
@@ -108,8 +118,7 @@ namespace MineSweeper
                         Height = 20,
                         Background = Brushes.White,
                         Style = (Style)Application.Current.Resources["TileButton"],
-                        Name = "btn"+row.ToString()+col.ToString()
-                        // , Content = "0"
+                        Name = "btn"+row+col
                     };
 
                     var row1 = row;
@@ -132,66 +141,88 @@ namespace MineSweeper
         /// <param name="col">Column of the tile</param>
         private void GridBtn_Click(object sender, RoutedEventArgs a ,int row, int col)
         {
-            // Dit moet helemaal opnieuw geschreven worden als volgt:
-
-            
-            // Stap 4: Herhaal dit bij de geclearde tiles totdat je nergens meer een 0 hebt 
-
-            // Stap 1: Als er een mijn ligt is het game over
-            if (_tileGrid[row, col].IsMine)
+            if (!_tileGrid[row, col].IsFlagged)
             {
-                ((Button) sender).Background = new ImageBrush(mineSource);
-                MessageBox.Show("F");
-            }
-            else
-            {
-                ((Button) sender).IsEnabled = false;
-                ((Button) sender).Background = Brushes.Black;
-                ((Button) sender).Foreground = Brushes.White;
-                _tileGrid[row, col].IsCleared = true;
-
-                // Stap 2: tel hoeveel mijnen er om de tile heen liggen
-
-                // Logica om de omliggende buttons te checken
-
-                // Maak een list van elke button om de aangeklikte heen
-                int mineCounter = 0;
-                List<Tile> surroundingTiles = GetNeighbouringCells(row, col);
-                foreach (Tile t in surroundingTiles)
+                // Stap 1: Als er een mijn ligt is het game over
+                if (_tileGrid[row, col].IsMine)
                 {
-                    // Loop door die lijst en tel de mines eromheen
-                    if (t.IsMine) mineCounter++;
-                }
+                    ((Button) sender).Background = new ImageBrush(mineSource);
+                    if ((MessageBox.Show("You have hit a mine! \n Restart?", "Game Over", MessageBoxButton.YesNo) ==
+                         MessageBoxResult.Yes))
+                    {
+                        new GameWindow(_length, _height, _start_bombs).Show();
+                        this.Close();
+                    }
+                    else new MainWindow().Show();
 
-                // Stap 3: Als dit 0 is dan clear je alle tiles eromheen en tel je bij de geclearde tiles weer opnieuw het aantal mijnen
-                if (mineCounter != 0) ((Button)sender).Content = mineCounter.ToString();
+                    this.Close();
+
+                }
                 else
                 {
-                   ClearSurroundingCells(row, col);
+                    ((Button) sender).IsEnabled = false;
+                    ((Button) sender).Background = Brushes.Black;
+                    ((Button) sender).Foreground = Brushes.White;
+                    _tileGrid[row, col].IsCleared = true;
+
+                    _tileCounter++;
+
+                    // Maak een list van elke button om de aangeklikte heen
+                    int mineCounter = 0;
+                    List<Tile> surroundingTiles = GetNeighbouringCells(row, col);
+                    foreach (Tile t in surroundingTiles)
+                    {
+                        // Loop door die lijst en tel de mines eromheen
+                        if (t.IsMine) mineCounter++;
+                    }
+
+                    // Stap 3: Als dit 0 is dan clear je alle tiles eromheen en tel je bij de geclearde tiles weer opnieuw het aantal mijnen
+                    if (mineCounter != 0) ((Button) sender).Content = mineCounter.ToString();
+                    else
+                    {
+                        ClearSurroundingCells(row, col);
+                    }
                 }
 
-
-
-                // Als alle cellen eromheen leeg zijn mag de tile worden gecleard en moeten de getallen van de buren getoond worden.
-                // Als een van de buren ook 0 bommen eromheen heeft dan moet dit process weer opnieuw starten
-                // Bij het klikken op de tile moet ook het getelde getal weergeven worden
-                //if (count == 0 && (t.Row != row || t.Column != col))
-                ////{
-                //    GridBtn_Click((Button) FindDescendant(MinefieldGrid, $"btn{t.Row}{t.Column}"),
-                //        new RoutedEventArgs(), t.Row, t.Column);
-                //}
-                //else
-                //{
-                //((Button)FindDescendant(MinefieldGrid, $"btn{t.Row}{t.Column}")).Content = count.ToString();
-                //}
-                //}
-
-                // Loop door die lijst en tel de mines eromheen
-                // Als een button geen mines eromheen heeft dan maak je weer een lijst en check je opnieuw
-
+                CheckWin();
             }
         }
 
+        // CHeck if all tiles have been cleared
+        private void CheckWin()
+        {
+            bool isCleared = true;
+            for (int i = 0; i < _tileGrid.GetLength(0); i++)
+            {
+                if (!isCleared) break; 
+
+                for (int j = 0; j < _tileGrid.GetLength(1); j++)
+                {
+                    if (!_tileGrid[i, j].IsFlagged && !_tileGrid[i, j].IsCleared)
+                    {
+                        isCleared = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isCleared)
+            {
+                t.Stop();
+                if (MessageBox.Show("You have cleared all mines! \n Restart?", "Congratulations!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    new GameWindow(_length, _height, _start_bombs).Show();
+                    this.Close();
+                }
+                else new MainWindow().Show();
+            }
+        }
+
+        /// <summary>
+        /// Clear surrounding empty cells
+        /// </summary>
+        /// <param name="row">Row index</param>
+        /// <param name="col">Column index</param>
         private void ClearSurroundingCells(int row, int col)
         {
             List<Tile> surroundingCells = GetNeighbouringCells(row, col);
@@ -206,33 +237,41 @@ namespace MineSweeper
                         counter++;
                     }
                 }
-                //if (counter == 0 && (tile.Row != row || tile.Column != col))
-                //{
-                //    ClearSurroundingCells(tile.Row, tile.Column);
-               // }
-                //else
-                //{
+                if (counter == 0 && (tile.Row != row || tile.Column != col) && !tile.IsCleared)
+                {
+                    tile.IsCleared = true;
+                    ClearSurroundingCells(tile.Row, tile.Column);
+                }
+                else
+                {
+
                     ((Button)FindDescendant(MinefieldGrid, $"btn{tile.Row}{tile.Column}")).IsEnabled = false;
                     ((Button)FindDescendant(MinefieldGrid, $"btn{tile.Row}{tile.Column}")).Background = Brushes.Black;
                     ((Button) FindDescendant(MinefieldGrid, $"btn{tile.Row}{tile.Column}")).Foreground = Brushes.White;
-                    if(counter>0) ((Button)FindDescendant(MinefieldGrid, $"btn{tile.Row}{tile.Column}")).Content = counter;
-
-                //}
+                    _tileGrid[tile.Row, tile.Column].IsCleared = true;
+                    if (counter>0) ((Button)FindDescendant(MinefieldGrid, $"btn{tile.Row}{tile.Column}")).Content = counter;
+                }
             }
         }
 
+        /// <summary>
+        /// Get a list of neighbouring cells
+        /// </summary>
+        /// <param name="row">Row index</param>
+        /// <param name="col">Column index</param>
+        /// <returns>List of surrounding cells</returns>
         private List<Tile> GetNeighbouringCells(int row, int col)
         {
             List<Tile> surroundingTiles = new List<Tile>();
 
             for (int i = -1; i <= 1; i++)
             {
-                //check if row exists
+                //check if row exists (in case of corners or edges)
                 if (row + i > -1 && row + i < _tileGrid.GetLength(0))
                 {
                     for (int j = -1; j <= 1; j++)
                     {
-                        // check if column exists
+                        // check if column exists (in case of corners or edges)
                         if (col + j > -1 && col + j < _tileGrid.GetLength(1) && (col + j != 0 || row + i != 0))
                         {
                             surroundingTiles.Add(_tileGrid[row+i, col+j]);
@@ -255,9 +294,10 @@ namespace MineSweeper
             if (_tileGrid[row, col].IsFlagged)
             {
                 ((Button)sender).Foreground = Brushes.White;
-                ((Button)sender).Background = Brushes.Black;
+                ((Button)sender).Background = Brushes.White;
                 _tileGrid[row, col].IsFlagged = false;
                 Bombs++;
+                _tileCounter--;
             }
             else
             {
@@ -265,7 +305,10 @@ namespace MineSweeper
                 ((Button)sender).Foreground = Brushes.Transparent;
                 _tileGrid[row, col].IsFlagged = true;
                 --Bombs;
+                _tileCounter++;
             }
+
+            CheckWin();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
