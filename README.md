@@ -6,7 +6,7 @@ This Repo contains a version of minesweeper made in WPF.
 
 ## Screenshots
 
-![Gameplay](https://imgur.com/lSzrivI)
+![Gameplay](https://imgur.com/lSzrivI.png)
 
 ![menu](https://i.imgur.com/DWRMohS.png)
 
