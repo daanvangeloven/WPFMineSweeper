@@ -49,5 +49,10 @@ namespace MineSweeper.Classes
             get => _isCleared;
             set => _isCleared = value;
         }
+
+        public override string ToString()
+        {
+            return $"This tile is on Row: {Row}, Column: {Column}, Cleared: {IsCleared}, IsMine: {IsMine}, IsFlagged: {IsFlagged}";
+        }
     }
 }

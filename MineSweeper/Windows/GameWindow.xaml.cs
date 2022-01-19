@@ -79,8 +79,10 @@ namespace MineSweeper
                        Row = row,
                        Column = col
                    };
-               }
-           }
+                    
+
+                }
+            }
 
            // Place mines in empty grid
            for(int i = 0; i < _bombs; i++)
@@ -90,7 +92,8 @@ namespace MineSweeper
 
                if (_tileGrid[row, col].IsMine) --i; // Check if the field is already a mine
                else _tileGrid[row, col].IsMine = true;
-           }
+                Debug.WriteLine(_tileGrid[row, col]);
+            }
            GenerateGrid();
         }
 
